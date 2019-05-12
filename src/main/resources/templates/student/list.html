@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8">
+    <title>简易表格</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="js/jquery-3.4.1.min.js"></script>
+
+    <style type="text/css">
+        .table-hover > tbody > tr:hover > td,
+        .table-hover > tbody > tr:hover > th {
+            color:blue;
+            cursor: pointer;
+        }
+
+        body{
+            background-color: whitesmoke;
+        }
+        h1{
+            padding-left: 550px;
+            font-size: 30px;
+            color: #2aabd2;
+        }
+        th,td{
+            font-style: normal;
+            color: grey;
+        }
+
+        .div1{
+            padding-top: 70px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <h1>学生基本信息</h1>
+
+    <div class="div1">
+    <table class="table table-hover" >
+        <thead>
+        <tr class="success">
+            <th>ID</th>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>分数</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-th-each="student: ${data}">
+            <th scope="row" data-th-text="${student.id}"></th>
+            <td data-th-text="${student.name}"></td>
+            <td data-th-text="${student.sex}"></td>
+            <td data-th-text="${student.score}"></td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<script src="/js/bootstrap.min.js"></script>
+</body>
+</html>
