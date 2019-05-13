@@ -26,4 +26,24 @@ public class StudentServiceTest {
 
         Assert.assertNotNull(studentList);
     }
+
+    @Test
+    public void insert() {
+        Student student=new Student();
+        student.setName("赵柳");
+        student.setPassword("000");
+        student.setScore(87);
+        student.setSex(1);
+
+        Student student1=studentService.insert(student);
+        assertNotNull(student1.getId());
+    }
+
+    @Test
+    public void update() {
+        Student student=studentService.getById(5L);
+        student.setName("赵柳2");
+        studentService.update(student);
+
+    }
 }

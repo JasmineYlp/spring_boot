@@ -19,4 +19,22 @@ public class StudentService {
         return studentRepository.findAll();
 
     }
+    /*
+    插入学生
+     */
+    public Student insert(Student student){
+        return studentRepository.save(student);
+    }
+
+    /*
+    更新学生
+     */
+    public Student update(Student student){
+        return studentRepository.save(student);
+    }
+
+    public Student getById(Long id){
+        Student student=studentRepository.findById(id).orElse(null);
+        return student;
+    }
 }
