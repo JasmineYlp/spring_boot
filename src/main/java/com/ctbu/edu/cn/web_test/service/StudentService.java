@@ -33,6 +33,20 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
+    /*
+   删除学生
+    */
+    public void delete(Student student){
+
+        studentRepository.delete(student);
+    }
+
+    public void delete(Long id){
+        Student student=new Student();
+        student.setId(id);
+        studentRepository.delete(student);
+    }
+
     public Student getById(Long id){
         Student student=studentRepository.findById(id).orElse(null);
         return student;
