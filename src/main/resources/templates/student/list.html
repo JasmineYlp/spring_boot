@@ -143,6 +143,7 @@
                 data:data
             }).done(function () {
 
+                $('#stuTable').bootstrapTable("destroy");
                 loadTable();
                 $('#myModal').modal('hide');
             })
@@ -155,6 +156,7 @@
                 data:data
             }).done(function () {
 
+                $('#stuTable').bootstrapTable("destroy");
                 loadTable();
                 $('#myModal').modal('hide');
             })
@@ -177,6 +179,8 @@
             $("#sex").val(rs.sex);
             $("#score").val(rs.score);
 
+            $('#stuTable').bootstrapTable("destroy");
+            loadTable();
         })
 
     }
@@ -190,6 +194,7 @@
                 method:"delete"
             }).done(function () {
 
+                $('#stuTable').bootstrapTable("destroy");
                 loadTable();
             })
 
@@ -234,7 +239,20 @@
             },{
                 field: 'score',
                 title: '成绩'
-            },
+            },{
+                field: 'id',
+                title: '操 作',
+                width: 120,
+                align: 'center',
+                valign: 'middle',
+                formatter: function (value, row, index) {
+                    var id = row.id
+                    var html = '<a href="#" onclick="editStudent('+ id + ')">编辑 | </a>';
+                    html += '<a href="#" onclick="deleteStudent('+ id + ')">删除</a>';
+                    return html;
+                }
+
+            }
             ]
         })
 
