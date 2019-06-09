@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
@@ -45,5 +46,25 @@ public class StudentServiceTest {
         student.setName("赵柳2");
         studentService.update(student);
 
+    }
+
+    @Test
+    public void filterByName(){
+
+        Student student=new Student();
+        student.setName("李赞");
+
+        Sort sort=new Sort(Sort.Direction.DESC,"id");
+        Pageable pageable= PageRequest.of(0,10,sort);
+
+        ExampleMatcher matcher=ExampleMatcher.matching()
+                .withMatcher("name",ExampleMatcher.GenericPropertyMatchers.contains());
+
+        Example<Student> example=Example.of(student,matcher);
+
+        //Example<Student> example=Example.of(student);
+        Page<Student> studentPage=studentService.findAll(example,pageable);
+
+        System.out.println(studentPage);
     }
 }

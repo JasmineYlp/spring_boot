@@ -6,6 +6,10 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <script src="/js/jquery-3.4.1.min.js"></script>
 
+    <script src="/plugins/bootstraptable/bootstrap-table.min.js"></script>
+    <script src="/plugins/bootstraptable/locale/bootstrap-table-zh-CN.min.js"></script>
+    <link rel="stylesheet" href="/plugins/bootstraptable/bootstrap-table.min.css">
+
     <style type="text/css">
         .table-hover > tbody > tr:hover > td,
         .table-hover > tbody > tr:hover > th {
@@ -31,7 +35,6 @@
         }
     </style>
 
-
 </head>
 
 <body>
@@ -44,28 +47,19 @@
         新增学生
     </button>
 
+    <form class="form-inline" style="margin-top: 30px">
+        <div class="form-group">
+            <label for="searchName">请输入名字</label>
+            <input type="text" class="form-control" id="searchName" placeholder="请输入名字" name="searchName">
+        </div>
+
+        <button type="button" class="btn btn-default btn-primary" onclick="search();">查询</button>
+    </form>
+
 
     <div class="div1">
-    <table class="table table-hover" >
-        <thead>
-        <tr class="success">
-            <th>ID</th>
-            <th>姓名</th>
-            <th>性别</th>
-            <th>成绩</th>
-            <th style="with:100px;">操作</th>
+    <table class="table table-hover" id="stuTable">
 
-        </tr>
-        </thead>
-        <tbody id="studentTb">
-<!--        <tr data-th-each="student: ${data}">-->
-<!--            <th scope="row" data-th-text="${student.id}"></th>-->
-<!--            <td data-th-text="${student.name}"></td>-->
-<!--            <td data-th-text="${student.sex}"></td>-->
-<!--            <td data-th-text="${student.score}"></td>-->
-<!--        </tr>-->
-
-        </tbody>
     </table>
     </div>
 </div>
@@ -117,8 +111,16 @@
 
 
 <script src="/js/bootstrap.min.js"></script>
+<script src="/plugins/bootstraptable/bootstrap-table.min.js"></script>
+<script src="/plugins/bootstraptable/locale/bootstrap-table-zh-CN.min.js"></script>
 
 <script type="text/javascript">
+
+    function search() {
+
+        $('#stuTable').bootstrapTable("destroy");
+        loadTable();
+    }
 
     function preAdd() {
 
@@ -198,30 +200,46 @@
 
     function loadTable(){
 
-        $.ajax({
-            url:'/webapi/student/list'
-        }).done(function (rs) {
-            var len=rs.length;
+        $('#stuTable').bootstrapTable({
+            url: '/webapi/student/getbypage',
+            striped: true, // 设置为true会有隔行变色效果
+            pagination: true, // 设置为true会在底部显示分页条
+            singleSelect: false, // 设置为true将禁止多选
+            pageSize: 3, // 如果设置了分页，每页数据条数
+            pageNumber: 1, // 如果设置了分页，首页页码
+            sidePagination: "server", // 设置在哪里进行分页，可选值为"client" 或者"server"
 
-            var html="";
-            for(var i=0;i<len;i++){
-                var item=rs[i];
+            queryParams: function (params) {
 
-                html+="<tr>"
-                    +"<td>"+item.id+"</td>"
-                    +"<td>"+item.name+"</td>"
-                    +"<td>"+item.sex+"</td>"
-                    +"<td>"+item.score+"</td>"
+                var paraObj = {
+                    size:params.limit,
+                    page:params.offset/params.limit,
+                    sort: "id",
+                    direct: "desc",
+                    name:$("#searchName").val()
 
-                    +"<td><a href='#' onclick='editStudent("+item.id+");'>编辑</a>   <a href='#' " +
-                    "onclick='deleteStudent("+item.id+");'>删除</a></td>"
+                };
+                return paraObj;
+            },
 
-                    +"</tr>";
-            }
-            $("#studentTb").html(html);
-
+            columns: [{
+                field: 'id',
+                title: 'ID'
+            }, {
+                field: 'name',
+                title: '姓名'
+            }, {
+                field: 'sex',
+                title: '性别'
+            },{
+                field: 'score',
+                title: '成绩'
+            },
+            ]
         })
-    }
+
+
+    }//end of loadTable
 
     $(function(){
         loadTable();

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8">
+    <title>简易表格</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/jquery-3.4.1.min.js"></script>
+
+    <style type="text/css">
+        .table-hover > tbody > tr:hover > td,
+        .table-hover > tbody > tr:hover > th {
+            color:blue;
+            cursor: pointer;
+        }
+
+        body{
+            background-color: whitesmoke;
+        }
+        h1{
+            padding-left: 550px;
+            font-size: 30px;
+            color: #2aabd2;
+        }
+        th,td{
+            font-style: normal;
+            color: grey;
+        }
+
+        .div1{
+            padding-top: 70px;
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <h1>学生基本信息</h1>
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal" onclick="preAdd();">
+        新增学生
+    </button>
+
+
+    <div class="div1">
+    <table class="table table-hover" >
+        <thead>
+        <tr class="success">
+            <th>ID</th>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>成绩</th>
+            <th style="with:100px;">操作</th>
+
+        </tr>
+        </thead>
+        <tbody id="studentTb">
+<!--        <tr data-th-each="student: ${data}">-->
+<!--            <th scope="row" data-th-text="${student.id}"></th>-->
+<!--            <td data-th-text="${student.name}"></td>-->
+<!--            <td data-th-text="${student.sex}"></td>-->
+<!--            <td data-th-text="${student.score}"></td>-->
+<!--        </tr>-->
+
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<!模态框>
+<div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">学生信息</h4>
+            </div>
+            <div class="modal-body">
+
+                <!-表单开始->
+                <form id="formStudent">
+
+                    <input hidden="hidden" id="id" name="id"/>
+                    <div class="form-group">
+                        <label for="name">姓名</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="passward">密码</label>
+                        <input type="password" class="form-control" id="passward" name="passward" placeholder="密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="sex">性别</label>
+                        <select class="form-control" id="sex" name="sex">
+                            <option value="1">男</option>
+                            <option value="2">女</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="score">成绩</label>
+                        <input type="text" class="form-control" id="score" name="score" placeholder="成绩">
+                    </div>
+                </form>
+                <!-表单结束->
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-primary" onclick="saveStudent();">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<script src="/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+
+    function preAdd() {
+
+        $("#id").val(0);//提示新增
+
+    }
+
+    //新增或更新
+    function saveStudent() {
+
+        var data=$("#formStudent").serialize();
+
+        var id=$("#id").val();
+        if(id<1){
+            //是新增
+            $.ajax({
+
+                url:"/webapi/student/insert",
+                method:"post",
+                data:data
+            }).done(function () {
+
+                loadTable();
+                $('#myModal').modal('hide');
+            })
+        }else {
+            //是更新
+            $.ajax({
+
+                url:"/webapi/student/update",
+                method:"put",
+                data:data
+            }).done(function () {
+
+                loadTable();
+                $('#myModal').modal('hide');
+            })
+        }
+
+
+    }
+
+    function editStudent(id) {
+
+        $("#myModal").modal('show');
+
+        $.ajax({
+            url:'/webapi/student/get/'+id
+        }).done(function (rs) {
+
+            $("#id").val(rs.id);
+            $("#name").val(rs.name);
+            $("#passward").val("");
+            $("#sex").val(rs.sex);
+            $("#score").val(rs.score);
+
+        })
+
+    }
+
+    function deleteStudent(id) {
+
+        if(confirm("你是否真的要删除？")){
+            $.ajax({
+
+                url:"/webapi/student/delete/"+id,
+                method:"delete"
+            }).done(function () {
+
+                loadTable();
+            })
+
+        }//endif
+
+
+    }
+
+    function loadTable(){
+
+        $.ajax({
+            url:'/webapi/student/list'
+        }).done(function (rs) {
+            var len=rs.length;
+
+            var html="";
+            for(var i=0;i<len;i++){
+                var item=rs[i];
+
+                html+="<tr>"
+                    +"<td>"+item.id+"</td>"
+                    +"<td>"+item.name+"</td>"
+                    +"<td>"+item.sex+"</td>"
+                    +"<td>"+item.score+"</td>"
+
+                    +"<td><a href='#' onclick='editStudent("+item.id+");'>编辑</a>   <a href='#' " +
+                    "onclick='deleteStudent("+item.id+");'>删除</a></td>"
+
+                    +"</tr>";
+            }
+            $("#studentTb").html(html);
+
+        })
+    }
+
+    $(function(){
+        loadTable();
+    })
+</script>
+</body>
+</html>
